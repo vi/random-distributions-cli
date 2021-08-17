@@ -1,0 +1,13 @@
+[package]
+name = "random-distributions-cli"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.42"
+argh = "0.1.5"
+byteorder = "1.4.3"
+rand = {version="0.8.4", features=["small_rng"]}
+statrs = "0.15.0"
