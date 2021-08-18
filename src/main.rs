@@ -29,6 +29,7 @@ enum BinaryFormat {
 }
 
 /// Command-line tool to generate samples of various random distributions
+/// Note that more single-value distributions that are mentioned in https://docs.rs/statrs/0.15.0/statrs/distribution/index.html are easy to add to the tool.
 #[derive(argh::FromArgs)]
 struct Opts {
     /// number of digits after decimal to print
@@ -48,6 +49,10 @@ struct Opts {
     /// Out of range values are clamped to valid ranges
     #[argh(option,short='b')]
     binary_format: Option<BinaryFormat>,
+
+    /// number of sampels to generate, instead of an infinite stream
+    #[argh(option,short='n')]
+    num_samples: Option<u64>,
 
     #[argh(subcommand)]
     distribution : Distributions,
@@ -298,7 +303,13 @@ fn main() -> anyhow::Result<()> {
     };
 
     let mut c : f64 = 0.0;
+    let mut counter : u64 = 0;
     loop {
+        if let Some(limit) = opts.num_samples {
+            if counter >= limit {
+                break;
+            }
+        }
         let x = d.sample(&mut r);
         c += x;
         match opts.binary_format {
@@ -324,5 +335,7 @@ fn main() -> anyhow::Result<()> {
         }
         
         if ! opts.cumulative { c = 0.0; }
+        counter = counter.wrapping_add(1);
     }
+    Ok(())
 }
