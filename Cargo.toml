@@ -2,6 +2,11 @@
 name = "random-distributions-cli"
 version = "0.1.0"
 edition = "2018"
+categories = ["command-line-utilities", "algorithms", "simulation", "science", "mathematics"]
+keywords = ["random", "distribution", "sampling", "cli"]
+description = "A tool to generate samples from various random distributions, as a text lines or a binary stream. Includes a general form of Stable distribution."
+license = "MIT/Apache-2.0"
+repository = "https://github.com/vi/random-distributions-cli"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
