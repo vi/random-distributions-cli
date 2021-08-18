@@ -23,7 +23,7 @@ Command-line tool to generate samples of various random distributions. Note that
 
 Options:
   -p, --precision   number of digits after decimal to print
-  -C, --cumulative  add value of each sample to buffer
+  -C, --cumulative  add value of each sample to accumulator, outputting a random walk instead of individual samples
   -S, --seed        use specified seed instead for PRNG
   -b, --binary-format
                     output as binary numbers of specified format instead of

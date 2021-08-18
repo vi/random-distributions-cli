@@ -36,7 +36,7 @@ struct Opts {
     #[argh(option,default="10",short='p')]
     precision: usize,
 
-    /// add value of each sample to buffer
+    /// add value of each sample to accumulator, outputting a random walk instead of individual samples
     #[argh(switch,short='C')]
     cumulative: bool,
 
