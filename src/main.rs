@@ -2,7 +2,31 @@ use rand::SeedableRng;
 use std::io::Write;
 use std::f64::consts::FRAC_PI_2;
 use std::f64::consts::FRAC_2_PI;
+use byteorder::{BE,LE};
+use byteorder::WriteBytesExt;
 
+#[derive(strum_macros::EnumString)]
+#[strum(ascii_case_insensitive)]
+enum BinaryFormat {
+    F32BE,
+    F32LE,
+    F64BE,
+    F64LE,
+    U8,
+    U16BE,
+    U16LE,
+    U32BE,
+    U32LE,
+    U64BE,
+    U64LE,
+    S8,
+    S16BE,
+    S16LE,
+    S32BE,
+    S32LE,
+    S64BE,
+    S64LE,
+}
 
 /// Command-line tool to generate samples of various random distributions
 #[derive(argh::FromArgs)]
@@ -18,6 +42,12 @@ struct Opts {
     /// use specified seed instead for PRNG
     #[argh(option,short='S')]
     seed: Option<u64>,
+
+    /// output as binary numbers of specified format instead of text.
+    /// Valid formats are f{{32,64}}{{be,le}}, {{u,s}}8, {{u,s}}{{16,32,64}}{{le,be}}.
+    /// Out of range values are clamped to valid ranges
+    #[argh(option,short='b')]
+    binary_format: Option<BinaryFormat>,
 
     #[argh(subcommand)]
     distribution : Distributions,
@@ -248,11 +278,29 @@ fn main() -> anyhow::Result<()> {
     let mut c : f64 = 0.0;
     loop {
         let x = d.sample(&mut r);
-        if opts.cumulative {
-            c += x;
-            writeln!(so, "{:.*}", opts.precision, c)?;
-        } else {
-            writeln!(so, "{:.*}", opts.precision, x)?;
+        c += x;
+        match opts.binary_format {
+            None => writeln!(so, "{:.*}", opts.precision, c)?,
+            Some(BinaryFormat::F32LE) => so.write_f32::<LE>(c as f32)?,
+            Some(BinaryFormat::F32BE) => so.write_f32::<BE>(c as f32)?,
+            Some(BinaryFormat::F64LE) => so.write_f64::<LE>(c)?,
+            Some(BinaryFormat::F64BE) => so.write_f64::<BE>(c)?,
+            Some(BinaryFormat::S8) => so.write_i8(c as i8)?,
+            Some(BinaryFormat::U8) => so.write_u8(c as u8)?,
+            Some(BinaryFormat::S16LE) => so.write_i16::<LE>(c as i16)?,
+            Some(BinaryFormat::S16BE) => so.write_i16::<BE>(c as i16)?,
+            Some(BinaryFormat::U16LE) => so.write_u16::<LE>(c as u16)?,
+            Some(BinaryFormat::U16BE) => so.write_u16::<BE>(c as u16)?,
+            Some(BinaryFormat::S32LE) => so.write_i32::<LE>(c as i32)?,
+            Some(BinaryFormat::S32BE) => so.write_i32::<BE>(c as i32)?,
+            Some(BinaryFormat::U32LE) => so.write_u32::<LE>(c as u32)?,
+            Some(BinaryFormat::U32BE) => so.write_u32::<BE>(c as u32)?,
+            Some(BinaryFormat::S64LE) => so.write_i64::<LE>(c as i64)?,
+            Some(BinaryFormat::S64BE) => so.write_i64::<BE>(c as i64)?,
+            Some(BinaryFormat::U64LE) => so.write_u64::<LE>(c as u64)?,
+            Some(BinaryFormat::U64BE) => so.write_u64::<BE>(c as u64)?,
         }
+        
+        if ! opts.cumulative { c = 0.0; }
     }
 }

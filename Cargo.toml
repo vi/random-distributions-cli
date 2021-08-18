@@ -11,3 +11,5 @@ argh = "0.1.5"
 byteorder = "1.4.3"
 rand = {version="0.8.4", features=["small_rng"]}
 statrs = "0.15.0"
+strum = "0.21.0"
+strum_macros = "0.21.1"
