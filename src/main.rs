@@ -62,6 +62,8 @@ enum Distributions {
     Triangular(Triangular),
     StudentsT(StudentsT),
     Stable(Stable),
+    Empirical(Empirical),
+    Categorical(Categorical),
 }
 
 trait DistributionObject {
@@ -158,6 +160,24 @@ struct Stable {
 
     #[argh(positional)]
     beta: f64,
+}
+
+
+/// Discrete distribution that just endlessly randomly selects one of specified values
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="empirical")]
+struct Empirical {
+    #[argh(positional)]
+    data_points: Vec<f64>,
+}
+
+
+/// Discrete distribution that generates values according to specified probabilities 
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="categorical")]
+struct Categorical {
+    #[argh(positional)]
+    probabilities: Vec<f64>,
 }
 
 struct StableAlphaNotOne {
@@ -267,6 +287,8 @@ fn main() -> anyhow::Result<()> {
                 Box::new(StableAlphaNotOne::new(location,scale,alpha,beta))
             }
         }
+        Distributions::Empirical(Empirical { data_points }) => Box::new(statrs::distribution::Empirical::from_vec(data_points)),
+        Distributions::Categorical(Categorical { probabilities }) =>  Box::new(statrs::distribution::Categorical::new(&probabilities)?),
     };
     
     let mut r = if let Some(s) = opts.seed {
