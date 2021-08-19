@@ -1,6 +1,11 @@
 # random-distributions-cli
 Command-line tool to generate samples of various random distributions
 
+# Installation
+
+You can download pre-built files from [Github releases](https://github.com/vi/random-distributions-cli/releases) or install the tool from crates.io using `cargo install random-distributions-cli`.
+
+
 # Usage
 
 ```
