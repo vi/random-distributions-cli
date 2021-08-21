@@ -29,7 +29,6 @@ enum BinaryFormat {
 }
 
 /// Command-line tool to generate samples of various random distributions.
-/// Note that more single-value distributions that are mentioned in https://docs.rs/statrs/0.15.0/statrs/distribution/index.html are easy to add to the tool.
 #[derive(argh::FromArgs)]
 struct Opts {
     /// number of digits after decimal to print
@@ -81,6 +80,21 @@ enum Distributions {
     Stable(Stable),
     Empirical(Empirical),
     Categorical(Categorical),
+    Beta(Beta),
+    Binomial(Binomial),
+    DiscreteUniform(DiscreteUniform),
+    ChiSquared(ChiSquared),
+    Chi(Chi),
+    Gamma(Gamma),
+    Exp(Exp),
+    FisherSnedecor(FisherSnedecor),
+    Geometric(Geometric),
+    Hypergeometric(Hypergeometric),
+    InverseGamma(InverseGamma),
+    Laplace(Laplace),
+    Pareto(Pareto),
+    Poisson(Poisson),
+    Weibull(Weibull),
 }
 
 trait DistributionObject {
@@ -198,6 +212,162 @@ struct Categorical {
     probabilities: Vec<f64>,
 }
 
+/// Beta distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="beta")]
+struct Beta {
+    #[argh(positional)]
+    shape_a: f64,
+
+    #[argh(positional)]
+    shape_b: f64,
+}
+
+/// Binomial distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="binomial")]
+struct Binomial {
+    #[argh(positional)]
+    probability: f64,
+
+    #[argh(positional)]
+    trials: u64,
+}
+
+/// Discrete uniform, generates integer numbers from min to max, both inclusive
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="discreteuniform")]
+struct DiscreteUniform {
+    #[argh(positional)]
+    min: i64,
+
+    #[argh(positional)]
+    max: i64,
+}
+
+/// Chi-squared distribution which is a special case of the Gamma distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="chisquared")]
+struct ChiSquared {
+    #[argh(positional)]
+    freedom: f64,
+}
+
+
+/// Chi distribution 
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="chi")]
+struct Chi {
+    #[argh(positional)]
+    freedom: f64,
+}
+
+/// Gamma distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="gamma")]
+struct Gamma {
+    #[argh(positional)]
+    shape: f64,
+
+    #[argh(positional)]
+    rate: f64,
+}
+
+
+/// Exponential distribution and is a special case of the Gamma distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="exp")]
+struct Exp {
+    #[argh(positional)]
+    rate: f64,
+}
+
+/// Fisher-Snedecor distribution also commonly known as the F-distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="fisher")]
+struct FisherSnedecor {
+    #[argh(positional)]
+    freedom_1: f64,
+
+    #[argh(positional)]
+    freedom_2: f64,
+}
+
+/// Geometric distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="geometric")]
+struct Geometric {
+    #[argh(positional)]
+    probability: f64,
+}
+
+/// Hypergeometric distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="hypergeometric")]
+struct Hypergeometric {
+    #[argh(positional)]
+    population: u64,
+
+    #[argh(positional)]
+    successes: u64,
+
+    #[argh(positional)]
+    draws: u64,
+}
+
+/// Inverse Gamma distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="inversegamma")]
+struct InverseGamma {
+    #[argh(positional)]
+    shape: f64,
+
+    #[argh(positional)]
+    rate: f64,
+}
+
+/// Laplace distribution.
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="laplace")]
+struct Laplace {
+    #[argh(positional)]
+    location: f64,
+
+    #[argh(positional)]
+    scale: f64,
+}
+
+/// Pareto distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="pareto")]
+struct Pareto {
+    #[argh(positional)]
+    scale: f64,
+
+    #[argh(positional)]
+    shape: f64,
+}
+
+
+/// Poisson distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="poisson")]
+struct Poisson {
+    #[argh(positional)]
+    lambda: f64,
+}
+
+/// Weibull distribution
+#[derive(argh::FromArgs)]
+#[argh(subcommand, name="weibull")]
+struct Weibull {
+    #[argh(positional)]
+    shape: f64,
+
+    #[argh(positional)]
+    scale: f64,
+}
+
 struct StableAlphaNotOne {
     location: f64,
     alpha: f64,
@@ -306,6 +476,21 @@ fn main() -> anyhow::Result<()> {
         }
         Distributions::Empirical(Empirical { data_points }) => Box::new(statrs::distribution::Empirical::from_vec(data_points)),
         Distributions::Categorical(Categorical { probabilities }) =>  Box::new(statrs::distribution::Categorical::new(&probabilities)?),
+        Distributions::Beta(Beta { shape_a, shape_b }) => Box::new(statrs::distribution::Beta::new(shape_a,shape_b)?),
+        Distributions::Binomial(Binomial { probability, trials }) => Box::new(statrs::distribution::Binomial::new(probability,trials)?),
+        Distributions::DiscreteUniform(DiscreteUniform { min, max }) => Box::new(statrs::distribution::DiscreteUniform::new(min,max)?),
+        Distributions::ChiSquared(ChiSquared { freedom }) => Box::new(statrs::distribution::ChiSquared::new(freedom)?),
+        Distributions::Chi(Chi { freedom }) => Box::new(statrs::distribution::Chi::new(freedom)?),
+        Distributions::Gamma(Gamma { shape, rate }) => Box::new(statrs::distribution::Gamma::new(shape,rate)?),
+        Distributions::Exp(Exp { rate }) => Box::new(statrs::distribution::Exp::new(rate)?),
+        Distributions::FisherSnedecor(FisherSnedecor { freedom_1, freedom_2 }) => Box::new(statrs::distribution::FisherSnedecor::new(freedom_1,freedom_2)?),
+        Distributions::Geometric(Geometric { probability }) => Box::new(statrs::distribution::Geometric::new(probability)?),
+        Distributions::Hypergeometric(Hypergeometric { population, successes, draws }) => Box::new(statrs::distribution::Hypergeometric::new(population,successes,draws)?),
+        Distributions::InverseGamma(InverseGamma { shape, rate }) => Box::new(statrs::distribution::InverseGamma::new(shape,rate)?),
+        Distributions::Laplace(Laplace { location, scale }) => Box::new(statrs::distribution::Laplace::new(location,scale)?),
+        Distributions::Pareto(Pareto { scale, shape }) => Box::new(statrs::distribution::Pareto::new(scale,shape)?),
+        Distributions::Poisson(Poisson { lambda }) => Box::new(statrs::distribution::Poisson::new(lambda)?),
+        Distributions::Weibull(Weibull { shape, scale }) => Box::new(statrs::distribution::Weibull::new(shape,scale)?),
     };
     
     let mut r = if let Some(s) = opts.seed {

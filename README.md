@@ -22,9 +22,9 @@ $ target/release/random-distributions-cli -n 3 uniform -- -1 1
 -0.7817481855
 
 $ random-distributions-cli --help
-Usage: random-distributions-cli [-p <precision>] [-C] [-S <seed>] [-b <binary-format>] [-n <num-samples>] <command> [<args>]
+Usage: random-distributions-cli [-p <precision>] [-C] [-S <seed>] [-b <binary-format>] [-n <num-samples>] [-e] [-L <discard-below>] [-H <discard-above>] <command> [<args>]
 
-Command-line tool to generate samples of various random distributions. Note that more single-value distributions that are mentioned in https://docs.rs/statrs/0.15.0/statrs/distribution/index.html are easy to add to the tool.
+Command-line tool to generate samples of various random distributions.
 
 Options:
   -p, --precision   number of digits after decimal to print
@@ -37,6 +37,13 @@ Options:
                     {u,s}{16,32,64}{le,be}. Out of range values are
                     clamped to valid ranges
   -n, --num-samples number of sampels to generate, instead of an infinite stream
+  -e, --exponentiate
+                    exponentiate (e^x) each sample, producing log-normal instead
+                    of normal distribution, log-Cauchy instead of Cauchy, etc.
+  -L, --discard-below
+                    discard samples that are below the specified value
+  -H, --discard-above
+                    discard samples that are above the specified value
   --help            display usage information
 
 Commands:
@@ -52,6 +59,25 @@ Commands:
                     one of specified values
   categorical       Discrete distribution that generates values according to
                     specified probabilities
+  beta              Beta distribution
+  binomial          Binomial distribution
+  discreteuniform   Discrete uniform, generates integer numbers from min to max,
+                    both inclusive
+  chisquared        Chi-squared distribution which is a special case of the
+                    Gamma distribution
+  chi               Chi distribution
+  gamma             Gamma distribution
+  exp               Exponential distribution and is a special case of the Gamma
+                    distribution
+  fisher            Fisher-Snedecor distribution also commonly known as the
+                    F-distribution
+  geometric         Geometric distribution
+  hypergeometric    Hypergeometric distribution
+  inversegamma      Inverse Gamma distribution
+  laplace           Laplace distribution.
+  pareto            Pareto distribution
+  poisson           Poisson distribution
+  weibull           Weibull distribution
 ```
 
 Individual distributions may provide additional internal `--help` messages.
