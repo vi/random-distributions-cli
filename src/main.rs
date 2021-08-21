@@ -54,6 +54,18 @@ struct Opts {
     #[argh(option,short='n')]
     num_samples: Option<u64>,
 
+    /// exponentiate (e^x) each sample, producing log-normal instead of normal distribution, log-Cauchy instead of Cauchy, etc.
+    #[argh(switch,short='e')]
+    exponentiate: bool,
+
+    /// discard samples that are below the specified value
+    #[argh(option,short='L')]
+    discard_below: Option<f64>,
+
+    /// discard samples that are above the specified value
+    #[argh(option,short='H')]
+    discard_above: Option<f64>,
+
     #[argh(subcommand)]
     distribution : Distributions,
 }
@@ -310,7 +322,21 @@ fn main() -> anyhow::Result<()> {
                 break;
             }
         }
-        let x = d.sample(&mut r);
+        let mut x = d.sample(&mut r);
+
+        if opts.exponentiate { x = x.exp(); }
+
+        if let Some(limit) = opts.discard_below {
+            if x < limit {
+                continue;
+            }
+        }
+        if let Some(limit) = opts.discard_above {
+            if x > limit {
+                continue;
+            }
+        }
+
         c += x;
         match opts.binary_format {
             None => writeln!(so, "{:.*}", opts.precision, c)?,
