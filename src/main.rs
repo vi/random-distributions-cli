@@ -487,7 +487,7 @@ fn main() -> anyhow::Result<()> {
         Distributions::Geometric(Geometric { probability }) => Box::new(statrs::distribution::Geometric::new(probability)?),
         Distributions::Hypergeometric(Hypergeometric { population, successes, draws }) => Box::new(statrs::distribution::Hypergeometric::new(population,successes,draws)?),
         Distributions::InverseGamma(InverseGamma { shape, rate }) => Box::new(statrs::distribution::InverseGamma::new(shape,rate)?),
-        Distributions::Laplace(Laplace { location, scale }) => Box::new(statrs::distribution::Laplace::new(location,scale)?),
+        Distributions::Laplace(Laplace { location, scale }) => anyhow::bail!("Laplace distribution is temporarily disabled due to https://github.com/statrs-dev/statrs/issues/150"),
         Distributions::Pareto(Pareto { scale, shape }) => Box::new(statrs::distribution::Pareto::new(scale,shape)?),
         Distributions::Poisson(Poisson { lambda }) => Box::new(statrs::distribution::Poisson::new(lambda)?),
         Distributions::Weibull(Weibull { shape, scale }) => Box::new(statrs::distribution::Weibull::new(shape,scale)?),
